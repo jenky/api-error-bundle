@@ -81,7 +81,7 @@ Register your service if needed, in case `autowire` and `autoconfigure` is disab
 
 ### Exception Transformations
 
-Internally, all exceptions are transformed into [`Problem`](https://github.com/jenky/api-error/blob/main/src/Problem.php). If you want to add custom transformations, you should a new class that implements the [`ExceptionTransformer`](ExceptionTransformer). With `autoconfigured` **enabled**, you're all set. Otherwise, register it in Symfony container with the `api_error.exception_transformer` tag.
+Internally, all exceptions are transformed into [`Problem`](https://github.com/jenky/api-error/blob/main/src/Problem.php). If you want to add custom transformations, you should create a new class that implements the [`ExceptionTransformer`](ExceptionTransformer). With `autoconfigured` **enabled**, you're all set. Otherwise, register it in Symfony container with the `api_error.exception_transformer` tag.
 
 ## Testing
 
