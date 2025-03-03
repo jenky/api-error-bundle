@@ -13,6 +13,7 @@ use Jenky\ApiError\Handler\Symfony\ResponseHandler;
 use Jenky\ApiError\Transformer\ChainTransformer;
 use Jenky\ApiError\Transformer\ExceptionTransformer;
 use Jenky\Bundle\ApiError\EventListener\ExceptionListener;
+use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
@@ -38,7 +39,7 @@ class ApiErrorBundle extends AbstractBundle
         ];
 
         foreach ($formatters as $id => $formatter) {
-            $builder->registerChild($id, AbstractErrorFormatter::class)
+            $builder->setDefinition($id, new ChildDefinition(AbstractErrorFormatter::class))
                 ->setClass($formatter);
         }
 
