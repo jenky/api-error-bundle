@@ -19,7 +19,7 @@ composer require jenky/api-error-bundle-bunder
 
 If you are not using `symfony/flex`, you'll have to manually add the bundle to your bundles file:
 
-``` php
+```php
 // config/bundles.php
 
 return [
@@ -34,7 +34,7 @@ return [
 
 By default all thrown exceptions will be transformed into the following format:
 
-```json
+```js
 {
     'message' => '{message}', // The exception message
     'status' => '{status_code}', // The corresponding HTTP status code, defaults to 500
