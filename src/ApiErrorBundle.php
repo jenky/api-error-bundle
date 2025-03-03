@@ -13,7 +13,6 @@ use Jenky\ApiError\Handler\Symfony\ResponseHandler;
 use Jenky\ApiError\Transformer\ChainTransformer;
 use Jenky\ApiError\Transformer\ExceptionTransformer;
 use Jenky\Bundle\ApiError\EventListener\ExceptionListener;
-use Symfony\Component\DependencyInjection\Argument\TaggedIteratorArgument;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
@@ -28,16 +27,6 @@ class ApiErrorBundle extends AbstractBundle
         $builder->registerForAutoconfiguration(ExceptionTransformer::class)
             ->addTag('api_error.exception_transformer');
 
-        $builder->register('api_error.exception_transformer.chain', ChainTransformer::class)
-            ->setArguments([
-                new TaggedIteratorArgument('api_error.exception_transformer'),
-            ]);
-
-        $builder->register('api_error.response_handler.json', JsonResponseHandler::class)
-            ->setArguments([
-                new Reference(ErrorFormatter::class),
-            ]);
-
         $builder->register(AbstractErrorFormatter::class)
             ->setAbstract(true)
             ->setArgument('$debug', new Parameter('kernel.debug'))
@@ -45,7 +34,7 @@ class ApiErrorBundle extends AbstractBundle
 
         $formatters = [
             'api_error.error_formatter.generic' => GenericErrorFormatter::class,
-            'api_error.error_formatter.rfc7870' => Rfc7807ErrorFormatter::class,
+            'api_error.error_formatter.rfc7807' => Rfc7807ErrorFormatter::class,
         ];
 
         foreach ($formatters as $id => $formatter) {
@@ -62,7 +51,17 @@ class ApiErrorBundle extends AbstractBundle
         }
 
         $container->services()
+            ->set('api_error.exception_transformer.chain', ChainTransformer::class)
+            ->args([
+                Configurator\tagged_iterator('api_error.exception_transformer'),
+            ])
+            ->tag('api_error.exception_transformer')
             ->alias(ExceptionTransformer::class, 'api_error.exception_transformer.chain')
+
+            ->set('api_error.response_handler.json', JsonResponseHandler::class)
+            ->args([
+                Configurator\service(ErrorFormatter::class),
+            ])
 
             ->set('api_error.exception_listener', ExceptionListener::class)
             ->args([

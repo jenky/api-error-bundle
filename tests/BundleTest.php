@@ -35,7 +35,7 @@ final class BundleTest extends KernelTestCase
     public function test_init_with_custom_formatter(): void
     {
         self::bootKernel(['config' => static function (TestKernel $kernel) {
-            $kernel->addTestConfig(static fn (ContainerBuilder $builder) => $builder->setAlias(ErrorFormatter::class, 'api_error.error_formatter.rfc7870'));
+            $kernel->addTestConfig(static fn (ContainerBuilder $builder) => $builder->setAlias(ErrorFormatter::class, 'api_error.error_formatter.rfc7807'));
         }]);
 
         $container = static::getContainer();
