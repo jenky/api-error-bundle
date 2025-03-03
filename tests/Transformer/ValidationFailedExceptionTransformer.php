@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Jenky\Bundle\ApiError\Transformer;
+namespace Jenky\Bundle\ApiError\Tests\Transformer;
 
 use Jenky\ApiError\Problem;
 use Jenky\ApiError\Rfc7807Problem;

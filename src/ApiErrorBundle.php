@@ -13,9 +13,12 @@ use Jenky\ApiError\Handler\Symfony\ResponseHandler;
 use Jenky\ApiError\Transformer\ChainTransformer;
 use Jenky\ApiError\Transformer\ExceptionTransformer;
 use Jenky\Bundle\ApiError\EventListener\ExceptionListener;
+use Symfony\Component\DependencyInjection\Argument\TaggedIteratorArgument;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
+use Symfony\Component\DependencyInjection\Parameter;
+use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
 
 class ApiErrorBundle extends AbstractBundle
@@ -25,30 +28,20 @@ class ApiErrorBundle extends AbstractBundle
         $builder->registerForAutoconfiguration(ExceptionTransformer::class)
             ->addTag('api_error.exception_transformer');
 
-        $container->services()
-            ->set('api_error.exception_transformer.chain', ChainTransformer::class)
-            ->args([
-                Configurator\tagged_iterator('api_error.exception_transformer'),
-            ])
-            ->alias(ExceptionTransformer::class, 'api_error.exception_transformer.chain')
-
-            ->set(JsonResponseHandler::class)
-            ->args([
-                Configurator\service(ErrorFormatter::class),
-            ])
-
-            ->set('api_error.exception_listener', ExceptionListener::class)
-            ->args([
-                Configurator\service(ResponseHandler::class),
-            ])
-            ->tag('kernel.event_listener', ['priority' => -120])
-
-            ->set(AbstractErrorFormatter::class)
-            ->abstract()
-            ->args([
-                Configurator\param('kernel.debug'),
-                Configurator\service(ExceptionTransformer::class),
+        $builder->register('api_error.exception_transformer.chain', ChainTransformer::class)
+            ->setArguments([
+                new TaggedIteratorArgument('api_error.exception_transformer'),
             ]);
+
+        $builder->register('api_error.response_handler.json', JsonResponseHandler::class)
+            ->setArguments([
+                new Reference(ErrorFormatter::class),
+            ]);
+
+        $builder->register(AbstractErrorFormatter::class)
+            ->setAbstract(true)
+            ->setArgument('$debug', new Parameter('kernel.debug'))
+            ->setArgument('$transformer', new Reference(ExceptionTransformer::class));
 
         $formatters = [
             'api_error.error_formatter.generic' => GenericErrorFormatter::class,
@@ -65,7 +58,16 @@ class ApiErrorBundle extends AbstractBundle
         }
 
         if (! $builder->hasDefinition(ResponseHandler::class)) {
-            $builder->setAlias(ResponseHandler::class, JsonResponseHandler::class);
+            $builder->setAlias(ResponseHandler::class, 'api_error.response_handler.json');
         }
+
+        $container->services()
+            ->alias(ExceptionTransformer::class, 'api_error.exception_transformer.chain')
+
+            ->set('api_error.exception_listener', ExceptionListener::class)
+            ->args([
+                Configurator\service(ResponseHandler::class),
+            ])
+            ->tag('kernel.event_listener', ['priority' => -120]);
     }
 }

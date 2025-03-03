@@ -19,13 +19,13 @@
     ],
     "require": {
         "php": "^8.1",
-        "jenky/api-error": "@dev",
-        "symfony/framework-bundle": "^6.1|^7.0"
+        "jenky/api-error": "@dev"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.10",
+        "nyholm/symfony-bundle-test": "^3.0",
         "phpstan/phpstan": "1.10",
-        "phpunit/phpunit": "^9.0|^10.0|^11.0",
+        "phpunit/phpunit": "^9.0|^10.0",
         "symfony/validator": "^6.2|^7.0"
     },
     "autoload": {
