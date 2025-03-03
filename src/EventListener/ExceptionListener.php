@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Jenky\Bundle\ApiError\EventListener;
 
-use Jenky\ApiError\Handler\JsonResponseHandler;
+use Jenky\ApiError\Handler\Symfony\ResponseHandler;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 
 class ExceptionListener
 {
     public function __construct(
-        private readonly JsonResponseHandler $handler,
+        private readonly ResponseHandler $handler,
     ) {
     }
 
