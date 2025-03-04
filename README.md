@@ -79,9 +79,9 @@ Create your own custom formatter that implements [`ErrorFormatter`](https://gith
 
 Register your service if needed, in case `autowire` and `autoconfigure` is disabled, then follow [RFC7807 Problem details guide](#rfc7807-problem-details) to create the alias.
 
-### Exception Transformations
+### [Exception Transformations](https://github.com/jenky/api-error?tab=readme-ov-file#exception-transformations)
 
-Internally, all exceptions are transformed into [`Problem`](https://github.com/jenky/api-error/blob/main/src/Problem.php). If you want to add custom transformations, you should create a new class that implements the [`ExceptionTransformer`](ExceptionTransformer). With `autoconfigured` **enabled**, you're all set. Otherwise, register it in Symfony container with the `api_error.exception_transformer` tag.
+If you want to add custom transformations, you should create a new class that implements the [`ExceptionTransformer`](ExceptionTransformer). With `autoconfigured` **enabled**, you're all set. Otherwise, register it in Symfony container with the `api_error.exception_transformer` tag.
 
 ## Testing
 
