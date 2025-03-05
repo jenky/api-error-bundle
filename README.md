@@ -64,8 +64,9 @@ curl --location --request GET 'http://myapp.test/api/not-found' \
 
 You will need to create an alias from `Jenky\ApiError\Formatter\ErrorFormatter` interface to `api_error.error_formatter.rfc7807`.
 
-```yaml
+```yml
 # config/services.yaml
+
 services:
     # ...
     Jenky\ApiError\Formatter\ErrorFormatter: '@api_error.error_formatter.rfc7807'
@@ -77,7 +78,52 @@ services:
 
 Create your own custom formatter that implements [`ErrorFormatter`](https://github.com/jenky/api-error/blob/main/src/Formatter/ErrorFormatter.php). Alternatively, you can extend the [`AbstractErrorFormatter`](https://github.com/jenky/api-error/blob/main/src/Formatter/AbstractErrorFormatter.php), provided for the sake of convenience, and define your own error format in the `getFormat` method.
 
-Register your service if needed, in case `autowire` and `autoconfigure` is disabled, then follow [RFC7807 Problem details guide](#rfc7807-problem-details) to create the alias.
+Register your service if needed, in case `autowire` and `autoconfigure` are disabled. Then create the alias:
+
+```yml
+# config/services.yaml
+
+services:
+    # ...
+    api_error.error_formatter.custom:
+        class: MyCustomErrorFormatter
+        #
+
+    Jenky\ApiError\Formatter\ErrorFormatter: '@api_error.error_formatter.custom'
+```
+
+Alternatively, you can use the `GenericErrorFormatter` and [configure `ErrorFormatter` service with a Configurator](https://symfony.com/doc/current/service_container/configurators.html):
+
+```yml
+# services.yaml
+
+services:
+    #
+
+    Jenky\ApiError\Formatter\ErrorFormatter:
+        parent: Jenky\ApiError\Formatter\AbstractErrorFormatter
+        class: Jenky\ApiError\Formatter\GenericErrorFormatter
+        configurator: '@App\ApiError\ErrorFormatterConfigurator'
+```
+
+```php
+// App\ApiError\ErrorFormatterConfigurator.php
+
+use Jenky\ApiError\Formatter\GenericErrorFormatter;
+
+final class ErrorFormatterConfigurator
+{
+    public function __invoke(GenericErrorFormatter $formatter): void
+    {
+        $formatter->setFormat([
+            'message' => '{title}',
+            'status' => '{status_code}',
+            'code' => '{code}',
+            'errors' => '{errors}',
+        ]);
+    }
+}
+```
 
 ### [Exception Transformations](https://github.com/jenky/api-error?tab=readme-ov-file#exception-transformations)
 
@@ -110,7 +156,7 @@ If you discover any security related issues, please email contact@lynh.me instea
 
 The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
 
-[ico-version]: https://img.shields.io/packagist/v/jenky/api-error-bundle.svg?style=for-the-badge
+[ico-version]: https://img.shields.io/packagist/v/jenky/api-error-bundle.svg?logo=packagist&style=for-the-badge
 [ico-license]: https://img.shields.io/badge/license-MIT-brightgreen.svg?style=for-the-badge
 [ico-gh-actions]: https://img.shields.io/github/actions/workflow/status/jenky/api-error-bundle/testing.yml?branch=main&label=actions&logo=github&style=for-the-badge
 [ico-codecov]: https://img.shields.io/codecov/c/github/jenky/api-error-bundle?logo=codecov&style=for-the-badge
