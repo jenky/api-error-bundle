@@ -20,3 +20,6 @@ Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) princip
 
 ### Security
 - Nothing -->
+## 0.2.0 - 2025-04-26
+
+**Full Changelog**: https://github.com/jenky/api-error-bundle/compare/0.1.0...0.2.0
