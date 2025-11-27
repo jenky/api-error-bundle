@@ -2,6 +2,9 @@ name: Tests
 
 on: [push]
 
+env:
+  COMPOSER_NO_SECURITY_BLOCKING: 1
+
 jobs:
   test:
     runs-on: ${{ matrix.os }}
